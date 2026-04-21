@@ -11,7 +11,7 @@ export default function ShopDirectory() {
 
   const { data: categories } = api.public.getCategories.useQuery();
   const { data: products, isLoading } = api.public.getStorefrontProducts.useQuery({
-    categoryId: activeCategoryId || undefined
+    categoryId: activeCategoryId ?? undefined
   });
 
   return (
@@ -59,7 +59,7 @@ export default function ShopDirectory() {
              <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
           </div>
         ) : (
-          <ProductGrid products={products || []} />
+          <ProductGrid products={products ?? []} />
         )}
       </main>
     </div>

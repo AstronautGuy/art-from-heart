@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { products, categories } from "@/server/db/schema";
+import { products } from "@/server/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export const publicRouter = createTRPCRouter({
