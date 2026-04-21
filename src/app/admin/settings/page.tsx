@@ -6,7 +6,7 @@ import { Loader2, Trash2 } from "lucide-react";
 import { R2Uploader } from "@/app/_components/admin/R2Uploader";
 
 export default function SettingsPage() {
-  const [config, setConfig] = useState<any>({
+  const [config, setConfig] = useState<{ freeShippingThreshold: number; banners: string[] }>({
     freeShippingThreshold: 500, // stored in rupees/cents depending on preference
     banners: [],
   });
@@ -16,7 +16,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (settings?.config) {
-      setConfig(settings.config);
+      setConfig(settings.config as { freeShippingThreshold: number; banners: string[] });
     }
   }, [settings]);
 
@@ -32,7 +32,7 @@ export default function SettingsPage() {
   };
 
   const removeBanner = (url: string) => {
-    setConfig((prev: any) => ({
+    setConfig((prev) => ({
       ...prev,
       banners: prev.banners.filter((b: string) => b !== url),
     }));
@@ -57,7 +57,7 @@ export default function SettingsPage() {
             </label>
             <input
               type="number"
-              value={config.freeShippingThreshold || ""}
+              value={config.freeShippingThreshold ?? ""}
               onChange={(e) =>
                 setConfig({ ...config, freeShippingThreshold: parseInt(e.target.value) || 0 })
               }
@@ -75,6 +75,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {config.banners.map((bannerUrl: string) => (
                   <div key={bannerUrl} className="relative group rounded-md overflow-hidden border border-gray-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={bannerUrl} alt="Banner" className="w-full h-32 object-cover object-center" />
                     <button
                       onClick={() => removeBanner(bannerUrl)}
@@ -90,9 +91,9 @@ export default function SettingsPage() {
             <R2Uploader
               maxFiles={3}
               onUploadSuccess={(urls) => {
-                setConfig((prev: any) => ({
+                setConfig((prev) => ({
                   ...prev,
-                  banners: [...(prev.banners || []), ...urls],
+                  banners: [...(prev.banners ?? []), ...urls],
                 }));
               }}
             />

@@ -46,15 +46,15 @@ export default function ProductsPage() {
     setShowForm(true);
   };
 
-  const openEdit = (product: any) => {
+  const openEdit = (product: { id: string; name: string; description: string | null; price: number; categoryId: string | null; stockType: string; stockQuantity: number | null; freeShippingEligible: boolean; featured: boolean; images: string[] }) => {
     resetForm();
     setEditingProductId(product.id);
     setName(product.name);
-    setDescription(product.description || "");
+    setDescription(product.description ?? "");
     setPrice((product.price / 100).toString());
-    setCategoryId(product.categoryId);
-    setStockType(product.stockType);
-    setStockQuantity(product.stockQuantity.toString());
+    setCategoryId(product.categoryId ?? "");
+    setStockType(product.stockType as "limited" | "made_to_order");
+    setStockQuantity((product.stockQuantity ?? 0).toString());
     setFreeShipping(product.freeShippingEligible);
     setFeatured(product.featured);
     setImages(product.images);
@@ -133,7 +133,7 @@ export default function ProductsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Products</h1>
-          <p className="text-gray-500">Manage your store's inventory and listings.</p>
+          <p className="text-gray-500">Manage your store&apos;s inventory and listings.</p>
         </div>
         {!showForm && (
           <button
@@ -282,6 +282,7 @@ export default function ProductsPage() {
                         <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
                           {images.map((url) => (
                             <div key={url} className="group relative aspect-square rounded-lg border border-gray-200">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={url} alt="Attached" className="h-full w-full rounded-lg object-cover" />
                               <button
                                 type="button"
@@ -353,10 +354,13 @@ export default function ProductsPage() {
                   <div className="flex items-center">
                     <div className="h-10 w-10 flex-shrink-0">
                        {product.images[0] ? (
-                         product.images[0].match(/\.(mp4|webm|mov|ogg)$/i) ? (
+                         (/\.(mp4|webm|mov|ogg)$/i.exec(product.images[0])) ? (
                            <video className="h-10 w-10 rounded-md object-cover border border-gray-200" src={product.images[0]} muted loop playsInline />
                          ) : (
-                           <img className="h-10 w-10 rounded-md object-cover border border-gray-200" src={product.images[0]} alt="" />
+                           <>
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
+                             <img className="h-10 w-10 rounded-md object-cover border border-gray-200" src={product.images[0]} alt="" />
+                           </>
                          )
                        ) : (
                          <div className="h-10 w-10 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No img</div>

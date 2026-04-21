@@ -89,7 +89,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               {product.images.length > 0 ? (
                  product.images.map((media, idx) => (
                   <div key={idx} className="relative flex-[0_0_100%] min-w-0 aspect-[4/5]">
-                    {media.match(/\.(mp4|webm|mov|ogg)$/i) ? (
+                    {(/\.(mp4|webm|mov|ogg)$/i.exec(media)) ? (
                        <video
                          src={media}
                          controls
@@ -97,11 +97,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                          className="h-full w-full object-cover"
                        />
                     ) : (
-                       <img
-                         src={media}
-                         alt={`${product.name} - view ${idx + 1}`}
-                         className="h-full w-full object-cover"
-                       />
+                       <>
+                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                         <img
+                           src={media}
+                           alt={`${product.name} - view ${idx + 1}`}
+                           className="h-full w-full object-cover"
+                         />
+                       </>
                     )}
                   </div>
                  ))
@@ -137,7 +140,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 <h3 className="sr-only">Description</h3>
                 <div 
                    className="space-y-6 text-base text-slate-700 leading-relaxed prose prose-slate"
-                   dangerouslySetInnerHTML={{ __html: product.description || "" }} 
+                   dangerouslySetInnerHTML={{ __html: product.description ?? "" }} 
                 />
               </div>
 

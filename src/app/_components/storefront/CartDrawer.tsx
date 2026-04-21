@@ -2,7 +2,7 @@
 
 import { useCartStore } from "@/store/useCartStore";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import Image from "next/image";
+
 import { useEffect, useState } from "react";
 
 export function CartDrawer() {
@@ -33,7 +33,7 @@ export function CartDrawer() {
     const text = encodeURIComponent(lines.join("\n"));
     
     // In production, configure NEXT_PUBLIC_WHATSAPP_NUMBER in .env
-    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+1234567890";
+    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+1234567890";
     
     window.open(`https://wa.me/${phoneNumber}?text=${text}`, "_blank");
   };
@@ -86,9 +86,10 @@ export function CartDrawer() {
                 <li key={item.id} className="flex py-2">
                   <div className="h-24 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                     {item.image ? (
-                        item.image.match(/\.(mp4|webm|mov|ogg)$/i) ? (
+                        /\.(mp4|webm|mov|ogg)$/i.exec(item.image) ? (
                             <video src={item.image} className="h-full w-full object-cover" />
                         ) : (
+                            /* eslint-disable-next-line @next/next/no-img-element */
                             <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                         )
                     ) : (
