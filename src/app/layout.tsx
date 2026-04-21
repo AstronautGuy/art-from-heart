@@ -12,7 +12,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-
+import { CartDrawer } from "@/app/_components/storefront/CartDrawer";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -30,27 +30,27 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable}`}>
-      <ClerkProvider>
-        <header className="flex h-16 items-center justify-end gap-4 p-4">
-          <Show when="signed-out">
-            <SignInButton />
-            <SignUpButton>
-              <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
-                Sign Up
-              </button>
-            </SignUpButton>
-          </Show>
-          <Show when="signed-in">
-            <UserButton />
-          </Show>
-        </header>
-        <body>
-          <TRPCReactProvider>
-
-            {children}
-          </TRPCReactProvider>
-        </body>
-      </ClerkProvider>
+      <body>
+        <ClerkProvider>
+          {/* We hide the default global header on the store routes because they have their own Navbar. 
+              Leaving the Clerk buttons accessible for admin routes if needed. */}
+          <header className="hidden md:flex h-16 items-center justify-end gap-4 p-4 absolute top-0 right-0 z-[100] pointer-events-none *:pointer-events-auto">
+            <Show when="signed-out">
+              <SignInButton />
+              <SignUpButton>
+                <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
+          </header>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <CartDrawer />
+        </ClerkProvider>
+      </body>
     </html>
   );
 }

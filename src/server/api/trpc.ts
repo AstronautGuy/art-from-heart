@@ -6,11 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { auth } from "@clerk/nextjs/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { env } from "@/env";
 
 /**
  * 1. CONTEXT
@@ -25,8 +27,10 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const session = await auth();
   return {
     db,
+    session,
     ...opts,
   };
 };
@@ -104,3 +108,27 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+/**
+ * Protected Admin procedure
+ *
+ * Ensure the user is logged in AND has the admin role via Clerk session metadata.
+ */
+export const adminProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(({ ctx, next }) => {
+    if (!ctx.session?.userId) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+    }
+
+    if (ctx.session.userId !== env.ADMIN_CLERK_ID) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Admin privileges required" });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, userId: ctx.session.userId },
+      },
+    });
+  });
